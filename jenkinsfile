@@ -1,0 +1,14 @@
+node('master')
+   {
+       stage('checkout')
+       {
+           checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/rockezram/apache2.git']]])
+       }
+   stage('code build')
+     {
+        sh ' docker build -t devpracticep/dev:app .'
+        sh 'docker stop apache2 && docker rm apache2'
+        sh 'docker run -dti -p 80:80 --name apache2 devpracticep/dev:app'
+        sh 'docker push devpracticep/dev:app  '
+       }
+   }
